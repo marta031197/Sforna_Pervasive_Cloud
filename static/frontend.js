@@ -1,4 +1,4 @@
-const tick = 1000;
+const tick = 100;
 
 var interval;
 var dataInizio;
@@ -34,8 +34,8 @@ var sensori = {
         { id: "M026", x: 340, y: 80, radius: 10, acceso: false }
     ],
     rects: [
-        { id: "T002", x: 315, y: 398, w: 30, h: 18, acceso: false },
-        { id: "T001", x: 395, y: 530, w: 30, h: 18, acceso: false },
+        { id: "T002", x: 315, y: 398, w: 30, h: 18, temp: false },
+        { id: "T001", x: 395, y: 530, w: 30, h: 18, temp: false },
         { id: "D001", x: 595, y: 590, w: 50, h: 10, acceso: false },
         { id: "D002", x: 580, y: 490, w: 10, h: 55, acceso: false },
         { id: "D003", x: 250, y: 580, w: 45, h: 15, acceso: false }
@@ -45,6 +45,10 @@ var colori = {
     on: "#84db2e",
     off: "#db2e2e"
 };
+var colori_temp={
+    change1: "#2228f9",
+    change2: "#5cf0f3"
+}
 
 function onLoadApp() {
     var tmp = new Date(Date.parse(db[400].time));
@@ -153,8 +157,14 @@ function visualizzaAndamento(sensore) {
 
 
 function coloraSensore(sensore) {
-    sensore.acceso = !sensore.acceso;
-    var colore = sensore.acceso ? colori.on : colori.off;
+    if(sensore.id[0]=='T'){
+        sensore.temp = !sensore.temp;
+        var colore = sensore.temp ? colori_temp.change1 :colori_temp.change2;
+    }else{
+
+        sensore.acceso = !sensore.acceso;
+        var colore = sensore.acceso ? colori.on : colori.off;
+    }
     if (sensore.hasOwnProperty("w"))
         drawRect(sensore.x, sensore.y, sensore.w, sensore.h, colore);
     else
@@ -176,15 +186,12 @@ function timerTick() {
         var dt = new Date(Date.parse(e.time));
         return dt >= dataInizio && dt <= newDate;
     });
-
     if (events.length > 0) {
         log(newDate.toString() + ": ho trovato " + events.length.toString() + " eventi");
-
         events.forEach(function (e) {
             var sensore = sensori.circles.find(function (s) {
                 return s.id == e.sensore;
             });
-
             if (sensore == null) {
                 sensore = sensori.rects.find(function (s) {
                     return s.id == e.sensore;
@@ -199,8 +206,6 @@ function timerTick() {
                 coloraSensore(sensore);
         });
     }
-
-    //console.log(newDate);
     dataInizio = newDate;
 }
 
