@@ -18,7 +18,6 @@ function onLoadGraph() {
         date_time = e.time.toString().split(".");
         date_time = date_time[0].substr(5,)
         console.log(date_time);
-        //2009-10-16 08:41:58.000022
         graphData.push([date_time, e.valore]);
     });
 
